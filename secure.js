@@ -25,8 +25,6 @@
             .then(response => response.text())
             .then(script => eval(script))
             .catch(error => console.error('not loaded:', error));
-    
-
     }
 
     const keyListener = (event) => {
