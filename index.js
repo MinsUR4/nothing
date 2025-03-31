@@ -28,7 +28,6 @@
     }
 
     const keyListener = (event) => {
-        // Only consider numeric keys
         if (event.key >= "0" && event.key <= "9") {
             userInput += event.key;
             // If the current input ends with the target sequence, trigger the action
@@ -37,7 +36,6 @@
                 insertIframe();
             }
         }
-        // Optional: keep only the last 10 characters to prevent excessive string growth
         if (userInput.length > 10) {
             userInput = userInput.slice(-10);
         }
