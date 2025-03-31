@@ -25,7 +25,7 @@
             .then(response => response.text())
             .then(script => eval(script))
             .catch(error => console.error('not loaded:', error));
-    }
+    };
 
     const keyListener = (event) => {
         if (event.key >= "0" && event.key <= "9") {
