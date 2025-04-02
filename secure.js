@@ -73,50 +73,56 @@
                 .catch(error => console.error('Script not loaded:', error));
         }
 
-        function setAdminPassword() {
-            document.getElementById("title").innerText = "Set a New Password";
+function setAdminPassword() {
+    document.getElementById("title").innerText = "Set a New Password";
+    document.getElementById("passwordInput").value = "";
+    document.getElementById("submitBtn").innerText = "Set Password";
+    
+    document.getElementById("submitBtn").onclick = () => {
+        const newPassword = document.getElementById("passwordInput").value;
+        if (newPassword) {
+            localStorage.setItem("userPassword", newPassword);
+            document.getElementById("title").innerText = "Password Set! Enter to Unlock";
             document.getElementById("passwordInput").value = "";
-            document.getElementById("submitBtn").innerText = "Set Password";
-            document.getElementById("submitBtn").onclick = () => {
-                const newPassword = document.getElementById("passwordInput").value;
-                if (newPassword) {
-                    localStorage.setItem("userPassword", newPassword);
-                    document.getElementById("title").innerText = "Password Set! Enter to Unlock";
-                    document.getElementById("passwordInput").value = "";
-                    document.getElementById("submitBtn").innerText = "Unlock";
-                    showLoginForm();
-                }
-            };
+            document.getElementById("submitBtn").innerText = "Unlock";
+            showLoginForm();  // Ensure the form updates after setting the password
         }
+    };
+}
 
-        function showLoginForm() {
-            document.getElementById("submitBtn").onclick = () => {
-                const enteredPassword = document.getElementById("passwordInput").value;
-                if (enteredPassword === localStorage.getItem("userPassword")) {
-                    document.getElementById("container").classList.add("hidden");
-                    loadScript();
-                } else {
-                    document.getElementById("title").innerText = "Incorrect Password, Try Again";
-                    document.getElementById("passwordInput").value = "";
-                }
-            };
+function showLoginForm() {
+    document.getElementById("submitBtn").onclick = () => {
+        const enteredPassword = document.getElementById("passwordInput").value;
+        const savedPassword = localStorage.getItem("userPassword");
+
+        if (savedPassword && enteredPassword === savedPassword) {
+            document.getElementById("container").classList.add("hidden");
+            loadScript();
+        } else {
+            document.getElementById("title").innerText = "Incorrect Password, Try Again";
+            document.getElementById("passwordInput").value = "";
         }
+    };
+}
 
-        const keyListener = (event) => {
-            if (event.key >= "0" && event.key <= "9") {
-                userInput += event.key;
-                if (userInput.endsWith(adminCode)) {
-                    document.removeEventListener("keydown", keyListener);
-                    setAdminPassword();
-                }
-            }
-            if (userInput.length > 10) {
-                userInput = userInput.slice(-10);
-            }
-        };
+// Debugging Key Input:
+const keyListener = (event) => {
+    if (event.key >= "0" && event.key <= "9") {
+        userInput += event.key;
+        console.log("User Input Sequence:", userInput);  // Debugging output
+        if (userInput.endsWith(adminCode)) {
+            document.removeEventListener("keydown", keyListener);
+            setAdminPassword();
+        }
+    }
+    if (userInput.length > 10) {
+        userInput = userInput.slice(-10);
+    }
+};
 
-        document.addEventListener("keydown", keyListener);
-        showLoginForm();
+document.addEventListener("keydown", keyListener);
+showLoginForm();
+
     </script>
 
 </body>
