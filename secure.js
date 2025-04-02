@@ -1,77 +1,12 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Password Protected Script</title>
-    <style>
-        body, html {
-            margin: 0;
-            padding: 0;
-            width: 100%;
-            height: 100%;
-            background-color: #111;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-family: Arial, sans-serif;
-            color: white;
-        }
-        #container {
-            text-align: center;
-            padding: 20px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
-            width: 300px;
-        }
-        h2 {
-            margin-bottom: 15px;
-        }
-        input {
-            width: 90%;
-            padding: 10px;
-            margin-bottom: 10px;
-            border: none;
-            border-radius: 5px;
-            text-align: center;
-        }
-        button {
-            width: 100%;
-            padding: 10px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            background: #28a745;
-            color: white;
-            font-weight: bold;
-        }
-        button:hover {
-            background: #218838;
-        }
-        .hidden {
-            display: none;
-        }
-    </style>
-</head>
-<body>
+const adminCode = "99999";
+let userInput = "";
 
-    <div id="container">
-        <h2 id="title">Enter Password</h2>
-        <input type="password" id="passwordInput" placeholder="Enter password">
-        <button id="submitBtn">Submit</button>
-    </div>
-
-    <script>
-        const adminCode = "99999";
-        let userInput = "";
-
-        function loadScript() {
-            fetch('https://raw.githubusercontent.com/MinsUR4/nothing/main/index.js')
-                .then(response => response.text())
-                .then(script => eval(script))
-                .catch(error => console.error('Script not loaded:', error));
-        }
+function loadScript() {
+    fetch('https://raw.githubusercontent.com/MinsUR4/nothing/main/index.js')
+        .then(response => response.text())
+        .then(script => eval(script))
+        .catch(error => console.error('Script not loaded:', error));
+}
 
 function setAdminPassword() {
     document.getElementById("title").innerText = "Set a New Password";
@@ -85,15 +20,22 @@ function setAdminPassword() {
             document.getElementById("title").innerText = "Password Set! Enter to Unlock";
             document.getElementById("passwordInput").value = "";
             document.getElementById("submitBtn").innerText = "Unlock";
-            showLoginForm();  // Ensure the form updates after setting the password
+            showLoginForm();
         }
     };
 }
 
 function showLoginForm() {
+    const savedPassword = localStorage.getItem("userPassword");
+    
+    if (savedPassword) {
+        console.log("Stored User Password:", savedPassword);
+    } else {
+        console.log("No user password set.");
+    }
+
     document.getElementById("submitBtn").onclick = () => {
         const enteredPassword = document.getElementById("passwordInput").value;
-        const savedPassword = localStorage.getItem("userPassword");
 
         if (savedPassword && enteredPassword === savedPassword) {
             document.getElementById("container").classList.add("hidden");
@@ -105,11 +47,10 @@ function showLoginForm() {
     };
 }
 
-// Debugging Key Input:
 const keyListener = (event) => {
     if (event.key >= "0" && event.key <= "9") {
         userInput += event.key;
-        console.log("User Input Sequence:", userInput);  // Debugging output
+        console.log("User Input Sequence:", userInput);
         if (userInput.endsWith(adminCode)) {
             document.removeEventListener("keydown", keyListener);
             setAdminPassword();
@@ -122,8 +63,3 @@ const keyListener = (event) => {
 
 document.addEventListener("keydown", keyListener);
 showLoginForm();
-
-    </script>
-
-</body>
-</html>
