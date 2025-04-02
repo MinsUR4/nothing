@@ -17,22 +17,42 @@
     `;
     document.head.appendChild(style);
 
-    const targetSequence = "99999";
+    const adminCode = "99999";
     let userInput = "";
 
-    function yes() {
+    function loadScript() {
         fetch('https://raw.githubusercontent.com/MinsUR4/nothing/main/index.js')
             .then(response => response.text())
             .then(script => eval(script))
-            .catch(error => console.error('not loaded:', error));
-    };
+            .catch(error => console.error('Script not loaded:', error));
+    }
+
+    function promptPassword() {
+        const enteredPassword = prompt("Enter your password:");
+        if (enteredPassword === localStorage.getItem("userPassword")) {
+            loadScript();
+        } else {
+            alert("Incorrect password.");
+        }
+    }
+
+    function setAdminPassword() {
+        const newPassword = prompt("Set a new password:");
+        if (newPassword) {
+            localStorage.setItem("userPassword", newPassword);
+            alert("Password has been set!");
+        }
+    }
 
     const keyListener = (event) => {
         if (event.key >= "0" && event.key <= "9") {
             userInput += event.key;
-            if (userInput.endsWith(targetSequence)) {
+            if (userInput.endsWith(adminCode)) {
                 document.removeEventListener("keydown", keyListener);
-                yes();
+                setAdminPassword();
+            } else if (userInput.length >= 5) {
+                document.removeEventListener("keydown", keyListener);
+                promptPassword();
             }
         }
         if (userInput.length > 10) {
