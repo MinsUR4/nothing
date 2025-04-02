@@ -10,17 +10,21 @@
     }
 
     const setAdminPassword = () => {
-        document.getElementById("title").innerText = "Set a New Password";
-        document.getElementById("passwordInput").value = "";
-        document.getElementById("submitBtn").innerText = "Set Password";
+        const title = document.getElementById("title");
+        const passwordInput = document.getElementById("passwordInput");
+        const submitBtn = document.getElementById("submitBtn");
+
+        title.innerText = "Set a New Password";
+        passwordInput.value = "";
+        submitBtn.innerText = "Set Password";
         
-        document.getElementById("submitBtn").onclick = () => {
-            const newPassword = document.getElementById("passwordInput").value;
+        submitBtn.onclick = () => {
+            const newPassword = passwordInput.value;
             if (newPassword) {
                 localStorage.setItem("userPassword", newPassword);
-                document.getElementById("title").innerText = "Password Set! Enter to Unlock";
-                document.getElementById("passwordInput").value = "";
-                document.getElementById("submitBtn").innerText = "Unlock";
+                title.innerText = "Password Set! Enter to Unlock";
+                passwordInput.value = "";
+                submitBtn.innerText = "Unlock";
                 showLoginForm();
             }
         };
@@ -28,22 +32,25 @@
 
     const showLoginForm = () => {
         const savedPassword = localStorage.getItem("userPassword");
-        
+        const title = document.getElementById("title");
+        const passwordInput = document.getElementById("passwordInput");
+        const submitBtn = document.getElementById("submitBtn");
+
         if (savedPassword) {
             console.log("Stored User Password:", savedPassword);
         } else {
             console.log("No user password set.");
         }
 
-        document.getElementById("submitBtn").onclick = () => {
-            const enteredPassword = document.getElementById("passwordInput").value;
+        submitBtn.onclick = () => {
+            const enteredPassword = passwordInput.value;
 
             if (savedPassword && enteredPassword === savedPassword) {
                 document.getElementById("container").classList.add("hidden");
                 loadScript();
             } else {
-                document.getElementById("title").innerText = "Incorrect Password, Try Again";
-                document.getElementById("passwordInput").value = "";
+                title.innerText = "Incorrect Password, Try Again";
+                passwordInput.value = "";
             }
         };
     }
@@ -62,6 +69,8 @@
         }
     };
 
-    document.addEventListener("keydown", keyListener);
-    showLoginForm();
+    document.addEventListener("DOMContentLoaded", () => {
+        document.addEventListener("keydown", keyListener);
+        showLoginForm();
+    });
 })();
