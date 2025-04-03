@@ -1,69 +1,50 @@
 (() => {
     const style = document.createElement("style");
     style.textContent = `
-        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
-
         body, html {
             margin: 0;
             padding: 0;
             width: 100%;
             height: 100%;
+            background: linear-gradient(135deg, #ff9a9e, #fad0c4);
             display: flex;
             justify-content: center;
             align-items: center;
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            font-family: 'Poppins', sans-serif;
+            font-family: 'Arial', sans-serif;
         }
-
         .password-container {
             display: flex;
             flex-direction: column;
-            gap: 15px;
-            padding: 25px;
-            background: rgba(255, 255, 255, 0.2);
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            gap: 10px;
+            padding: 20px;
+            background: white;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
             border-radius: 12px;
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.3);
             text-align: center;
-            width: 300px;
-            transition: all 0.3s ease-in-out;
         }
-
-        .password-container:hover {
-            transform: scale(1.02);
-        }
-
         .password-input {
             padding: 12px;
             font-size: 16px;
-            border: none;
+            border: 1px solid #ddd;
             border-radius: 8px;
             outline: none;
-            text-align: center;
-            transition: all 0.3s ease-in-out;
+            transition: 0.3s;
         }
-
         .password-input:focus {
-            box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+            border-color: #ff758c;
         }
-
         .password-button {
             padding: 12px;
             font-size: 16px;
+            background: #ff758c;
+            color: white;
             border: none;
             border-radius: 8px;
-            background: linear-gradient(90deg, #ff758c, #ff7eb3);
-            color: white;
-            font-weight: bold;
             cursor: pointer;
-            transition: all 0.3s ease-in-out;
+            transition: 0.3s;
         }
-
         .password-button:hover {
-            background: linear-gradient(90deg, #ff7eb3, #ff758c);
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            background: #ff5b7e;
         }
     `;
     document.head.appendChild(style);
@@ -85,7 +66,7 @@
         container.className = "password-container";
 
         const input = document.createElement("input");
-        input.type = "text";
+        input.type = "password";
         input.placeholder = "Enter new password";
         input.className = "password-input";
 
@@ -99,7 +80,7 @@
                 localStorage.setItem("userPassword", password);
                 alert(`Password set to: ${password}`);
             } else {
-                alert("Please enter a valid password.");
+                alert("Enter a valid password!");
             }
         });
 
