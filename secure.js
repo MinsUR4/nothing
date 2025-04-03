@@ -58,6 +58,7 @@
             if (password) {
                 localStorage.setItem("userPassword", password);
                 alert(`password set to: ${password}`);
+                 document.body.innerHTML = "refresh the page"; 
             } else {
                 alert("enter a valid password bud");
             }
