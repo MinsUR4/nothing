@@ -57,9 +57,9 @@
             const password = input.value.trim();
             if (password) {
                 localStorage.setItem("userPassword", password);
-                alert(`Password set to: ${password}`);
+                alert(`password set to: ${password}`);
             } else {
-                alert("Enter a valid password.");
+                alert("enter a valid password bud");
             }
         });
 
