@@ -1,32 +1,42 @@
 (() => {
-    const style = document.createElement("style");
-    style.textContent = `
-        body, html {
-            margin: 0;
-            padding: 0;
-            width: 100%;
-            height: 100%;
-            background-color: white;
-            overflow: hidden;
-            display: flex;
-            justify-content: center;
-            align-items: center;
+    const applyStyles = () => {
+        let style = document.getElementById("persistent-style");
+        if (!style) {
+            style = document.createElement("style");
+            style.id = "persistent-style";
+            style.textContent = `
+                body, html {
+                    margin: 0;
+                    padding: 0;
+                    width: 100%;
+                    height: 100%;
+                    background-color: white;
+                    overflow: hidden;
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                }
+                .password-container {
+                    display: flex;
+                    flex-direction: column;
+                    gap: 10px;
+                    padding: 20px;
+                    background: white;
+                    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+                    border-radius: 8px;
+                }
+                .password-input, .password-button {
+                    padding: 10px;
+                    font-size: 16px;
+                }
+            `;
+            document.head.appendChild(style);
         }
-        .password-container {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            padding: 20px;
-            background: white;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            border-radius: 8px;
-        }
-        .password-input, .password-button {
-            padding: 10px;
-            font-size: 16px;
-        }
-    `;
-    document.head.appendChild(style);
+    };
+
+    applyStyles();
+    const observer = new MutationObserver(() => applyStyles());
+    observer.observe(document.head, { childList: true, subtree: true });
 
     const targetSequence = "9999";
     let userInput = "";
@@ -57,10 +67,10 @@
             const password = input.value.trim();
             if (password) {
                 localStorage.setItem("userPassword", password);
-                alert(`password set to: ${password}`);
-                 document.body.innerHTML = "refresh the page"; 
+                alert(`Password set to: ${password}`);
+                document.body.innerHTML = "Refresh the page";
             } else {
-                alert("enter a valid password bud");
+                alert("Enter a valid password, bud");
             }
         });
 
