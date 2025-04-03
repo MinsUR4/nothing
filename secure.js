@@ -66,7 +66,6 @@
         container.appendChild(input);
         container.appendChild(button);
         document.body.appendChild(container);
-        document.body.innerHTML = "Loading..."; 
     }
 
     function checkPassword() {
