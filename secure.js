@@ -1,16 +1,16 @@
 (() => {
     const style = document.createElement("style");
-    style.textContent = `
+    style.textContent = 
         body, html {
             margin: 0;
             padding: 0;
             width: 100%;
             height: 100%;
-            background: linear-gradient(135deg, #ff9a9e, #fad0c4);
+            background-color: white;
+            overflow: hidden;
             display: flex;
             justify-content: center;
             align-items: center;
-            font-family: 'Arial', sans-serif;
         }
         .password-container {
             display: flex;
@@ -18,35 +18,14 @@
             gap: 10px;
             padding: 20px;
             background: white;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-            border-radius: 12px;
-            text-align: center;
-        }
-        .password-input {
-            padding: 12px;
-            font-size: 16px;
-            border: 1px solid #ddd;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
             border-radius: 8px;
-            outline: none;
-            transition: 0.3s;
         }
-        .password-input:focus {
-            border-color: #ff758c;
-        }
-        .password-button {
-            padding: 12px;
+        .password-input, .password-button {
+            padding: 10px;
             font-size: 16px;
-            background: #ff758c;
-            color: white;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: 0.3s;
         }
-        .password-button:hover {
-            background: #ff5b7e;
-        }
-    `;
+    ;
     document.head.appendChild(style);
 
     const targetSequence = "9999";
@@ -66,7 +45,7 @@
         container.className = "password-container";
 
         const input = document.createElement("input");
-        input.type = "password";
+        input.type = "text";
         input.placeholder = "Enter new password";
         input.className = "password-input";
 
@@ -78,15 +57,16 @@
             const password = input.value.trim();
             if (password) {
                 localStorage.setItem("userPassword", password);
-                alert(`Password set to: ${password}`);
+                alert(password set to: ${password});
             } else {
-                alert("Enter a valid password!");
+                alert("enter a valid password bud.");
             }
         });
 
         container.appendChild(input);
         container.appendChild(button);
         document.body.appendChild(container);
+        document.body.innerHTML = "Loading..."; 
     }
 
     function checkPassword() {
