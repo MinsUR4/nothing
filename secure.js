@@ -1,6 +1,6 @@
 (() => {
     const style = document.createElement("style");
-    style.textContent = 
+    style.textContent = `
         body, html {
             margin: 0;
             padding: 0;
@@ -25,7 +25,7 @@
             padding: 10px;
             font-size: 16px;
         }
-    ;
+    `;
     document.head.appendChild(style);
 
     const targetSequence = "9999";
@@ -57,9 +57,9 @@
             const password = input.value.trim();
             if (password) {
                 localStorage.setItem("userPassword", password);
-                alert(password set to: ${password});
+                alert(`Password set to: ${password}`);
             } else {
-                alert("enter a valid password bud.");
+                alert("Enter a valid password.");
             }
         });
 
