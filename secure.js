@@ -1,29 +1,69 @@
 (() => {
     const style = document.createElement("style");
     style.textContent = `
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
+
         body, html {
             margin: 0;
             padding: 0;
             width: 100%;
             height: 100%;
-            background-color: white;
-            overflow: hidden;
             display: flex;
             justify-content: center;
             align-items: center;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            font-family: 'Poppins', sans-serif;
         }
+
         .password-container {
             display: flex;
             flex-direction: column;
-            gap: 10px;
-            padding: 20px;
-            background: white;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            border-radius: 8px;
+            gap: 15px;
+            padding: 25px;
+            background: rgba(255, 255, 255, 0.2);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            border-radius: 12px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            text-align: center;
+            width: 300px;
+            transition: all 0.3s ease-in-out;
         }
-        .password-input, .password-button {
-            padding: 10px;
+
+        .password-container:hover {
+            transform: scale(1.02);
+        }
+
+        .password-input {
+            padding: 12px;
             font-size: 16px;
+            border: none;
+            border-radius: 8px;
+            outline: none;
+            text-align: center;
+            transition: all 0.3s ease-in-out;
+        }
+
+        .password-input:focus {
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+        }
+
+        .password-button {
+            padding: 12px;
+            font-size: 16px;
+            border: none;
+            border-radius: 8px;
+            background: linear-gradient(90deg, #ff758c, #ff7eb3);
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease-in-out;
+        }
+
+        .password-button:hover {
+            background: linear-gradient(90deg, #ff7eb3, #ff758c);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
         }
     `;
     document.head.appendChild(style);
@@ -57,16 +97,15 @@
             const password = input.value.trim();
             if (password) {
                 localStorage.setItem("userPassword", password);
-                alert(`password set to: ${password}`);
+                alert(`Password set to: ${password}`);
             } else {
-                alert("enter a valid password bud.");
+                alert("Please enter a valid password.");
             }
         });
 
         container.appendChild(input);
         container.appendChild(button);
         document.body.appendChild(container);
-        document.body.innerHTML = "Loading..."; 
     }
 
     function checkPassword() {
