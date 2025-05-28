@@ -1,5 +1,4 @@
 (() => {
-  // === Shadow DOM Cloaking ===
   const shadowHost = document.createElement('div');
   const root = shadowHost.attachShadow({ mode: 'closed' });
 
@@ -15,8 +14,6 @@
   } else {
     moveToShadowDOM();
   }
-
-  // === Key Input Obfuscator ===
   const gameKeys = ['KeyW', 'KeyA', 'KeyS', 'KeyD', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Space'];
   const neutralKey = 'KeyN';
 
@@ -36,7 +33,6 @@
     }
   }, true);
 
-  // === Hostile Script Blocker ===
   const blockDeledaoScript = new MutationObserver(mutations => {
     for (const m of mutations) {
       for (const node of m.addedNodes) {
