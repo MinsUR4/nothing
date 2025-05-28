@@ -17,7 +17,7 @@
     document.head.appendChild(style);
 
     const iframe = document.createElement("iframe");
-    iframe.src = "https://urban-umbrella-7v7wxx9r7xq6hxxj6-8080.app.github.dev/";
+    iframe.src = "https://cerryx.net/";
     iframe.setAttribute("allowFullscreen", "true");
 
     document.body.appendChild(iframe);
