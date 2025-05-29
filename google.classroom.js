@@ -1,65 +1,56 @@
 (() => {
-  const iframeID = 'safe-frame';
-  const frame = document.getElementById(iframeID);
+  const cloakDOM = () => {
+    if (!document.body) return;
 
-  const shadowHost = document.createElement('div');
-  const root = shadowHost.attachShadow({ mode: 'closed' });
+    const realBody = document.body.cloneNode(true);
+    const ghostHost = document.createElement('div');
+    const shadow = ghostHost.attachShadow({ mode: 'closed' });
 
-  const isolateAndCloak = () => {
-    Array.from(document.body.children).forEach(el => {
-      if (el !== frame && el !== shadowHost) root.appendChild(el);
+    // Preserve all interactive functionality
+    Array.from(realBody.children).forEach(el => {
+      if (!el.id || el.id !== 'deledao-shield') {
+        try {
+          shadow.appendChild(el);
+        } catch (_) {}
+      }
     });
-    if (!document.body.contains(shadowHost)) {
-      document.body.insertBefore(shadowHost, frame);
-    }
+
+    document.body.innerHTML = ''; // Erase DOM exposure
+    ghostHost.id = 'deledao-shield';
+    document.body.appendChild(ghostHost);
   };
 
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', isolateAndCloak);
-  } else {
-    isolateAndCloak();
-  }
+  // Observe and re-cloak if anything changes
+  const reinforce = () => {
+    cloakDOM();
+    setInterval(cloakDOM, 1500);
+  };
 
-  setInterval(isolateAndCloak, 500);
+  document.readyState === 'loading'
+    ? document.addEventListener('DOMContentLoaded', reinforce)
+    : reinforce();
 
-  const gameKeys = ['KeyW', 'KeyA', 'KeyS', 'KeyD', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Space'];
-  document.addEventListener('keydown', e => {
-    if (gameKeys.includes(e.code)) {
-      e.stopImmediatePropagation();
-      e.preventDefault();
-      for (let i = 0; i < 3; i++) {
-        setTimeout(() => {
-          const fakeEvent = new KeyboardEvent('keydown', {
-            key: 'n',
-            code: 'KeyN',
-            bubbles: true,
-            cancelable: true
-          });
-          document.dispatchEvent(fakeEvent);
-        }, i * 50);
-      }
-    }
-  }, true);
-
-  const killScripts = node => {
+  // Block scanner scripts (live + mutation)
+  const blockScanners = node => {
     if (node.tagName === 'SCRIPT') {
-      const txt = node.textContent || '';
-      const src = node.src || '';
-      if (/deledao|filter|scanner|analyze|block/i.test(txt + src)) {
+      const content = (node.textContent || '') + (node.src || '');
+      if (/deledao|scan|filter|block|track|watch|detect/i.test(content)) {
         node.remove();
       }
     }
   };
 
-  const scanTree = node => {
-    if (node.nodeType === 1) killScripts(node);
-    if (node.childNodes) node.childNodes.forEach(scanTree);
+  const sweepTree = node => {
+    try {
+      if (node.nodeType === 1) blockScanners(node);
+      if (node.childNodes) node.childNodes.forEach(sweepTree);
+    } catch (_) {}
   };
 
-  const guard = new MutationObserver(muts => {
-    muts.forEach(m => m.addedNodes.forEach(scanTree));
-  });
-  guard.observe(document.documentElement, { childList: true, subtree: true });
+  const killObserver = new MutationObserver(muts =>
+    muts.forEach(m => m.addedNodes.forEach(sweepTree))
+  );
+  killObserver.observe(document.documentElement, { childList: true, subtree: true });
 
-  setInterval(() => scanTree(document.documentElement), 1000);
+  setInterval(() => sweepTree(document.documentElement), 1000);
 })();
