@@ -1,4 +1,4 @@
-(function() {
+1(function() {
   var neutralizeDeledao = function() {
     try {
       var knownGlobals = [
