@@ -1,4 +1,4 @@
-is this actually going to completley oblitrate deledao (function() {
+deledao (function() {
   var neutralizeDeledao = function() {
     try {
       var knownGlobals = [
