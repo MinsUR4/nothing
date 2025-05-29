@@ -20,5 +20,5 @@ setInterval(() => {
   });
   document.dispatchEvent(eventUp);
   // For debugging
-  // console.log('Simulated key 9 press');
+  console.log('9');
 }, 5000);
