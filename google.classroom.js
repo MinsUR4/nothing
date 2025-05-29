@@ -1,55 +1,65 @@
 (() => {
   const shadowHost = document.createElement('div');
   const root = shadowHost.attachShadow({ mode: 'closed' });
+  document.body.appendChild(shadowHost);
 
-  const moveToShadowDOM = () => {
-    while (document.body.firstChild) {
+  const cloak = () => {
+    while (document.body.firstChild && document.body.firstChild !== shadowHost) {
       root.appendChild(document.body.firstChild);
     }
-    document.body.appendChild(shadowHost);
   };
+  cloak();
+  setInterval(cloak, 500); 
 
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', moveToShadowDOM);
-  } else {
-    moveToShadowDOM();
-  }
   const gameKeys = ['KeyW', 'KeyA', 'KeyS', 'KeyD', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Space'];
-  const neutralKey = 'KeyN';
 
   document.addEventListener('keydown', e => {
     if (gameKeys.includes(e.code)) {
       e.stopImmediatePropagation();
       e.preventDefault();
 
-      const fakeEvent = new KeyboardEvent('keydown', {
-        key: 'n',
-        code: neutralKey,
-        bubbles: true,
-        cancelable: true
-      });
-
-      document.dispatchEvent(fakeEvent);
+      for (let i = 0; i < 3; i++) {
+        setTimeout(() => {
+          const fakeEvent = new KeyboardEvent('keydown', {
+            key: 'n',
+            code: 'KeyN',
+            bubbles: true,
+            cancelable: true
+          });
+          document.dispatchEvent(fakeEvent);
+        }, i * 50);
+      }
     }
   }, true);
 
-  const blockDeledaoScript = new MutationObserver(mutations => {
-    for (const m of mutations) {
-      for (const node of m.addedNodes) {
-        if (node.tagName === 'SCRIPT') {
-          const text = node.textContent || '';
-          const src = node.src || '';
-          if (/deledao|filter|block|gametracker|activescan/i.test(text + src)) {
-            node.remove();
-          }
-        }
+  const killScripts = node => {
+    if (node.tagName === 'SCRIPT') {
+      const text = node.textContent || '';
+      const src = node.src || '';
+      if (/deledao|filter|activescan|gametracker|analyzer/i.test(text + src)) {
+        node.remove();
       }
     }
+  };
+
+  const scanTree = node => {
+    if (node.nodeType === 1) killScripts(node);
+    if (node.childNodes && node.childNodes.length) {
+      node.childNodes.forEach(scanTree);
+    }
+  };
+
+  const guard = new MutationObserver(muts => {
+    muts.forEach(m => {
+      m.addedNodes.forEach(node => scanTree(node));
+    });
   });
 
-  blockDeledaoScript.observe(document.documentElement || document.body, {
+  guard.observe(document.documentElement, {
     childList: true,
     subtree: true
   });
+
+  setInterval(() => scanTree(document.documentElement), 1000);
 
 })();
