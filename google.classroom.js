@@ -1,56 +1,66 @@
 (() => {
-  const cloakDOM = () => {
-    if (!document.body) return;
+  const ORIGINAL = document.body;
+  const MIRROR = document.createElement('div');
+  const SHADOW = MIRROR.attachShadow({ mode: 'open' });
+  MIRROR.id = 'shadow-render-host';
 
-    const realBody = document.body.cloneNode(true);
-    const ghostHost = document.createElement('div');
-    const shadow = ghostHost.attachShadow({ mode: 'closed' });
+  const INPUT_SELECTOR = 'input, textarea, select';
 
-    // Preserve all interactive functionality
-    Array.from(realBody.children).forEach(el => {
-      if (!el.id || el.id !== 'deledao-shield') {
-        try {
-          shadow.appendChild(el);
-        } catch (_) {}
-      }
-    });
+  const cloneLiveDOM = () => {
+    try {
+      SHADOW.innerHTML = '';
+      const clone = ORIGINAL.cloneNode(true);
+      SHADOW.appendChild(clone);
 
-    document.body.innerHTML = ''; // Erase DOM exposure
-    ghostHost.id = 'deledao-shield';
-    document.body.appendChild(ghostHost);
+      // Mirror input values
+      const realInputs = ORIGINAL.querySelectorAll(INPUT_SELECTOR);
+      const cloneInputs = SHADOW.querySelectorAll(INPUT_SELECTOR);
+      realInputs.forEach((realInput, i) => {
+        if (cloneInputs[i]) cloneInputs[i].value = realInput.value;
+      });
+
+      // Mirror iframe display
+      const realIframes = ORIGINAL.querySelectorAll('iframe');
+      const cloneIframes = SHADOW.querySelectorAll('iframe');
+      realIframes.forEach((real, i) => {
+        if (cloneIframes[i]) {
+          cloneIframes[i].src = real.src;
+        }
+      });
+    } catch (e) {
+      console.warn('DOM mirror error:', e);
+    }
   };
 
-  // Observe and re-cloak if anything changes
-  const reinforce = () => {
-    cloakDOM();
-    setInterval(cloakDOM, 1500);
+  const installMirror = () => {
+    document.body.innerHTML = '';
+    document.body.appendChild(MIRROR);
+    cloneLiveDOM();
   };
+
+  // Continuous sync
+  const observer = new MutationObserver(cloneLiveDOM);
+  observer.observe(ORIGINAL, { childList: true, subtree: true, attributes: true });
+  setInterval(cloneLiveDOM, 1000); // Emergency resync
 
   document.readyState === 'loading'
-    ? document.addEventListener('DOMContentLoaded', reinforce)
-    : reinforce();
+    ? document.addEventListener('DOMContentLoaded', installMirror)
+    : installMirror();
 
-  // Block scanner scripts (live + mutation)
-  const blockScanners = node => {
+  // Kill hostile Deledao scripts
+  const nuke = node => {
     if (node.tagName === 'SCRIPT') {
       const content = (node.textContent || '') + (node.src || '');
-      if (/deledao|scan|filter|block|track|watch|detect/i.test(content)) {
+      if (/deledao|filter|scan|block|track|detect|watch/i.test(content)) {
         node.remove();
       }
     }
   };
-
-  const sweepTree = node => {
-    try {
-      if (node.nodeType === 1) blockScanners(node);
-      if (node.childNodes) node.childNodes.forEach(sweepTree);
-    } catch (_) {}
+  const treeSweep = node => {
+    if (node.nodeType === 1) nuke(node);
+    if (node.childNodes) node.childNodes.forEach(treeSweep);
   };
-
-  const killObserver = new MutationObserver(muts =>
-    muts.forEach(m => m.addedNodes.forEach(sweepTree))
-  );
-  killObserver.observe(document.documentElement, { childList: true, subtree: true });
-
-  setInterval(() => sweepTree(document.documentElement), 1000);
+  const antiDele = new MutationObserver(muts => muts.forEach(m => m.addedNodes.forEach(treeSweep)));
+  antiDele.observe(document.documentElement, { childList: true, subtree: true });
+  setInterval(() => treeSweep(document.documentElement), 1000);
 })();
