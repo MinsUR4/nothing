@@ -1,5 +1,5 @@
 (function() {
-  // Simple base64 encode/decode for demonstration
+  // Simple base64 encode/decode
   function encode(str) {
     return btoa(unescape(encodeURIComponent(str)));
   }
@@ -11,7 +11,7 @@
     }
   }
 
-  // Recursively encode all text nodes
+  // Encode all text nodes in the body
   function encodeTextNodes(node) {
     if (node.nodeType === Node.TEXT_NODE && node.nodeValue.trim()) {
       node.nodeValue = encode(node.nodeValue);
@@ -20,28 +20,52 @@
     }
   }
 
-  // Recursively decode all text nodes
-  function decodeTextNodes(node) {
+  // Clone and decode all text nodes for display
+  function cloneAndDecode(node) {
     if (node.nodeType === Node.TEXT_NODE && node.nodeValue.trim()) {
-      node.nodeValue = decode(node.nodeValue);
+      return document.createTextNode(decode(node.nodeValue));
     } else if (node.nodeType === Node.ELEMENT_NODE) {
-      Array.from(node.childNodes).forEach(decodeTextNodes);
+      const clone = node.cloneNode(false);
+      Array.from(node.childNodes).forEach(child => {
+        clone.appendChild(cloneAndDecode(child));
+      });
+      return clone;
     }
+    return node.cloneNode(false);
   }
 
-  // Encode on DOMContentLoaded, then decode immediately for the user
-  document.addEventListener('DOMContentLoaded', function() {
+  function obfuscateDOM() {
     encodeTextNodes(document.body);
-    setTimeout(function() {
-      decodeTextNodes(document.body);
-    }, 0); // decode right after encoding for user
-  });
 
-  // Optionally, re-decode on user interaction (for dynamic content)
-  document.addEventListener('mousemove', function() {
-    decodeTextNodes(document.body);
-  });
-  document.addEventListener('keydown', function() {
-    decodeTextNodes(document.body);
-  });
+    // Create a shadow host overlay
+    let shadowHost = document.createElement('div');
+    shadowHost.style.position = 'fixed';
+    shadowHost.style.top = 0;
+    shadowHost.style.left = 0;
+    shadowHost.style.width = '100vw';
+    shadowHost.style.height = '100vh';
+    shadowHost.style.zIndex = 2147483647;
+    shadowHost.style.pointerEvents = 'none'; // allow clicks to pass through
+    shadowHost.style.background = 'transparent';
+
+    document.body.appendChild(shadowHost);
+
+    // Attach shadow root and render decoded DOM
+    let shadow = shadowHost.attachShadow({mode: 'open'});
+    let decoded = cloneAndDecode(document.body);
+    shadow.appendChild(decoded);
+
+    // Optionally, update overlay on DOM changes
+    const observer = new MutationObserver(() => {
+      while (shadow.firstChild) shadow.removeChild(shadow.firstChild);
+      shadow.appendChild(cloneAndDecode(document.body));
+    });
+    observer.observe(document.body, {childList: true, subtree: true, characterData: true});
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', obfuscateDOM);
+  } else {
+    obfuscateDOM();
+  }
 })();
